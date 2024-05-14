@@ -14,6 +14,10 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
+app.get('/api/planets', async (req, res) => {
+    res.send("Hello, no planets are here please");
+})
+
 app.listen(PORT, () => {
     console.log('Star Wars is running')
 })
