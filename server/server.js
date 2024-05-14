@@ -93,6 +93,7 @@ app.get("/api/planets/:planetId/characters", async (req, res) => {
     }
 });
 
+// route for getting all film info
 app.get("/api/films", async (req, res) => {
     try {
         const client = await new MongoClient(url);
@@ -106,6 +107,7 @@ app.get("/api/films", async (req, res) => {
     }
 });
 
+// route to get a specific film's info
 app.get("/api/films/:id", async (req, res) => {
     try {
         const {filmId} = req.params.id
@@ -120,7 +122,7 @@ app.get("/api/films/:id", async (req, res) => {
     }
 });
 
-// route to get all planets associated with a specific film
+// route to get all characters associated with a specific film
 app.get("/api/films/:filmId/characters", async (req, res) => {
     const {filmId} = req.params;
     try {
@@ -138,7 +140,55 @@ app.get("/api/films/:filmId/characters", async (req, res) => {
         console.error("Error connecting to db, couldn't get film info");
         res.status(500).send("Internal server error while trying to fetch films");
     }
-})
+});
+
+// route for getting all planets associated with a specific film
+app.get ('/api/films/:filmId/planets', async (req, res) => {
+    const {filmId} = req.params;
+    try {
+        const client = await MongoClient.connect(url);
+        const collection = client.db(dbName).collection(planetsAndFilmsCollection);
+        const allPlanets = client.db(dbName).collection(planetsCollection);
+
+        const planetsAndFilms = await collection.find({film_id: Number(filmId)}).toArray()
+        const planetIds = planetsAndFilms.map(el => el.planet_id);
+        const ourPlanets = await allPlanets.find({id: {$in: planetIds}}).toArray();
+
+        res.status(200).send(ourPlanets);
+    } catch (error) { 
+        console.error("Error connecting to db, couldn't get film info");
+        res.status(500).send("Internal server error while trying to fetch films");
+    }
+});
+
+// route for getting all character info
+app.get("/api/characters", async (req, res) => {
+    try {
+        const client = await new MongoClient(url);
+        const db = client.db(dbName);
+        const collection = db.collection(charactersCollection);
+        const showCharacters = await collection.find({}).toArray();
+        res.status(200).send(showCharacters);
+    } catch (err) {
+        console.error("Error:", err);
+        res.status(500).send("Oops!");
+    }
+});
+
+// route for getting a specific character's info
+app.get("/api/characters/:characterId", async (req, res) => {
+    const {characterId} = req.params;
+    try {
+        const client = new MongoClient(url);
+        const db = client.db(dbName);
+        const collection = db.collection(charactersCollection);
+        const ourCharacter = await collection.find({id: Number(characterId)}).toArray();
+        res.status(200).send(ourCharacter);
+    } catch (err) {
+        console.error("Error:", err);
+        res.status(500).send("Oops!");
+    }
+});
 
 app.listen(PORT, () => {
     console.log('Star Wars is running')
