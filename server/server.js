@@ -14,6 +14,7 @@ const filmCollection =process.env.MONGO_FILM_COLLECTION
 const planetsCollection = process.env.MONGO_PLANETS_COLLECTION;
 const planetsAndFilmsCollection = process.env.MONGO_PLANETS_FILMS;
 const charactersCollection = process.env.MONGO_CHARACTER_COLLECTION;
+const filmsCharactersCollection = process.env.MONGO_FILM_CHARACTER_COLLECTION;
 // add collections 
 
 const app = express();
@@ -92,7 +93,7 @@ app.get("/api/planets/:planetId/characters", async (req, res) => {
     }
 });
 
-app.get("api/films", async (req, res) => {
+app.get("/api/films", async (req, res) => {
     try {
         const client = await new MongoClient(url);
         const db = client.db(dbName)
@@ -105,7 +106,7 @@ app.get("api/films", async (req, res) => {
     }
 });
 
-app.get("api/films:id", async (req, res) => {
+app.get("/api/films/:id", async (req, res) => {
     try {
         const {filmId} = req.params.id
         const client = new MongoClient(url);
@@ -118,6 +119,26 @@ app.get("api/films:id", async (req, res) => {
         res.status(500).send("Oops!")
     }
 });
+
+// route to get all planets associated with a specific film
+app.get("/api/films/:filmId/characters", async (req, res) => {
+    const {filmId} = req.params;
+    try {
+        const client = await MongoClient.connect(url);
+        const collection = client.db(dbName).collection(filmsCharactersCollection);
+        const characterCollection = client.db(dbName).collection(charactersCollection);
+
+        const filmsAndCharacters = await collection.find({film_id:Number(filmId)}).toArray();
+        const charIds = filmsAndCharacters.map(el => el.character_id);
+        const characters = await characterCollection.find({id: {$in: charIds}}).toArray();
+
+        console.log("Our films and characters:", characters);
+        res.status(200).send(characters);
+    } catch (error) {
+        console.error("Error connecting to db, couldn't get film info");
+        res.status(500).send("Internal server error while trying to fetch films");
+    }
+})
 
 app.listen(PORT, () => {
     console.log('Star Wars is running')
