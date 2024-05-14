@@ -13,6 +13,7 @@ const dbName = process.env.MONGO_DB;
 const filmCollection =process.env.MONGO_FILM_COLLECTION
 const planetsCollection = process.env.MONGO_PLANETS_COLLECTION;
 const planetsAndFilmsCollection = process.env.MONGO_PLANETS_FILMS;
+const charactersCollection = process.env.MONGO_CHARACTER_COLLECTION;
 // add collections 
 
 const app = express();
@@ -20,6 +21,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
+
+// route to get planet info
 app.get('/api/planets', async (req, res) => {
     console.log("Planets env", planetsCollection);
     try {
@@ -34,6 +37,7 @@ app.get('/api/planets', async (req, res) => {
     }
 });
 
+// route to get a specific planet's info
 app.get("/api/planets/:planetId", async (req, res) => {
     const {planetId} = req.params;
     try {
@@ -49,6 +53,7 @@ app.get("/api/planets/:planetId", async (req, res) => {
     }
 });
 
+// route to get films associated with a specific planet
 app.get("/api/planets/:planetId/films", async (req, res) => {
     const {planetId} = req.params;
     try {
@@ -69,6 +74,24 @@ app.get("/api/planets/:planetId/films", async (req, res) => {
     }
 });
 
+// route to get characters who live on a specific planet
+app.get("/api/planets/:planetId/characters", async (req, res) => {
+    const {planetId} = req.params;
+    try {
+        // get characters collection
+        const client = await MongoClient.connect(url);
+        const characterCollection = client.db(dbName).collection(charactersCollection);
+
+        // get characters associated with the given planet, using planetId for homeworld
+        const characters = await characterCollection.find({"homeworld": Number(planetId)}).toArray();
+        console.log("What's happening", characters);
+        res.status(201).send(characters);
+    } catch (error) {
+        console.error("Error connecting to database, couldn't get planets data");
+        res.status(500).send("Internal server error while trying to fetch planets");
+    }
+});
+
 app.get("api/films", async (req, res) => {
     try {
         const client = await new MongoClient(url);
@@ -80,7 +103,8 @@ app.get("api/films", async (req, res) => {
         console.error("Error:", err)
         res.status(500).send("Oops!")
     }
-})
+});
+
 app.get("api/films:id", async (req, res) => {
     try {
         const {filmId} = req.params.id
@@ -93,8 +117,8 @@ app.get("api/films:id", async (req, res) => {
         console.error("Error:", err)
         res.status(500).send("Oops!")
     }
-})
+});
 
 app.listen(PORT, () => {
     console.log('Star Wars is running')
-})
+});
