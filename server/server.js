@@ -52,12 +52,17 @@ app.get("/api/planets/:planetId", async (req, res) => {
 app.get("/api/planets/:planetId/films", async (req, res) => {
     const {planetId} = req.params;
     try {
+        // get film and planet collections
         const client = await MongoClient.connect(url);
         const collection = client.db(dbName).collection(planetsAndFilmsCollection);
-        const filmsAndPlanets = await collection.find({planet_id: Number(planetId)}).toArray();
+        const filmsCollection = client.db(dbName).collection(filmCollection);
 
-        // Need to query the planets and films collections to get their respective information
-        res.status(201).send(filmsAndPlanets);
+        // get planet information with associated film ID's, then use films ID's to get film info.
+        const filmsAndPlanets = await collection.find({planet_id: Number(planetId)}).toArray();
+        const filmIds = filmsAndPlanets.map(film => film.film_id)
+        const films = await filmsCollection.find({id: {$in: filmIds}}).toArray();
+
+        res.status(201).send(films);
     } catch (error) {
         console.error("Error connecting to database, couldn't get planets data");
         res.status(500).send("Internal server error while trying to fetch planets");
