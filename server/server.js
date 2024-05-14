@@ -190,6 +190,25 @@ app.get("/api/characters/:characterId", async (req, res) => {
     }
 });
 
+// route for querying all films with a specific character
+app.get("/api/characters/:characterId/films", async (req, res) => {
+    const {characterId} = req.params;
+    try {
+        const client = await MongoClient.connect();
+        const collection = client.db(dbName).collection(filmsCharactersCollection);
+        const allFilms = client.db(dbName).collection(filmCollection);
+
+        const charsAndFilms = await collection.find({character_id: Number(characterId)}).toArray();
+        const filmIds = charsAndFilms.map(el => el.film_id);
+        const ourFilms = await allFilms.find({id: {$in: filmIds}}).toArray();
+
+        res.status(200).send(ourFilms);
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send("Oops!");
+    }
+}); 
+
 app.listen(PORT, () => {
     console.log('Star Wars is running')
 });
