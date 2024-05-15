@@ -40,3 +40,24 @@
 .read-the-docs {
   color: #888;
 }
+
+#characterList{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  place-content: center;
+}
+
+.character {
+  font-size: 4vh;
+  border: 1px solid black;
+  border-radius: 4px;
+  padding: 0px 6px 0px 6px;
+  background-color: aquamarine;
+}
+
+.character:hover{
+  /* opacity: 80%; */
+  background-color: rgb(98, 194, 162);
+}

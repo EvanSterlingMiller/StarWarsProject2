@@ -49,6 +49,20 @@ function App() {
     <>
       <Router>
       <h1>Star Wars look up</h1>
+      <div id='characterList'>
+        {
+          characters.length !== 0 ? 
+          characters.map(char => {
+            return(
+              <div className='character'>
+                <small>{char.name}</small>
+              </div>
+            )
+          })
+          :
+          <></>
+        }
+      </div>
         <Routes>
             {/* <Route exact path="/" element={<Home />} />
             <Route exact path="/characters" element={<Characters />} />
