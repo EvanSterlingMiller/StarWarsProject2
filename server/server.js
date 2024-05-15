@@ -28,7 +28,6 @@ app.use(cors());
 
 // route to get planet info
 app.get('/api/planets', async (req, res) => {
-    console.log("Planets env", planetsCollection);
     try {
         const client = await MongoClient.connect(url);
         const collection = client.db(dbName).collection(planetsCollection);
