@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import './App.css'
-import {BrowserRouter as Router, Routes, Route}from 'react-router-dom'
-import Characters from './components/Characters'
-import Character from './components/Character'
-import Planets from './components/Planets'
-import Films from './components/Films'
+import './App.css';
+import {BrowserRouter as Router, Routes, Route}from 'react-router-dom';
+import Characters from './components/Characters';
+import Character from './components/Character';
+import Planets from './components/Planets';
+import Films from './components/Films';
+// import Film from './components/Film';
 
 function App() {
   const [characters, setCharacters] = useState([]);
@@ -52,28 +53,12 @@ function App() {
   return (
     <>
       <Router>
-      <h1>Star Wars look up</h1>
-      <div id='characterList'>
-        {
-          characters.length !== 0 ? 
-          characters.map(char => {
-            return(
-              <div className='character'>
-                <small>{char.name}</small>
-              </div>
-            )
-          })
-          :
-          <></>
-        }
-      </div>
         <Routes>
-            {/* { <Route exact path="/" element={<Home />} /> */}
-            <Route exact path="/characters" element={<Characters />} />
-            <Route exact path="/character" element={<Character/>} />
+            <Route exact path="/characters" element={<Characters characters={characters}/>} />
+            <Route exact path="/character/:id" element={<Character characters={characters}/>} />
             <Route exact path="/films" element={<Films />} />
+            <Route exact path="/film/:id" element={<Film films={films} />} />
             <Route exact path="/planets" element={<Planets />} /> 
-            
         </Routes>
     
       </Router>

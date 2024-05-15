@@ -3,25 +3,12 @@ import { Link, useParams } from "react-router-dom"
 
 const Character = (props) => {
   let { id } = useParams();
-  const [character, setCharacter] = useState({});
-  const [planet, setPlanet] = useState({});
-  const [films, setFilms] = useState([]);
+//   const [film, setFilm] = useState({})
   
-  const characters = props.characters;
-
+  const film = props.films;
+ 
   useEffect(() => {
-    let char;
-    fetch(`/api/characters/${id}`)
-      .then(res => res.json())
-      .then(character => { char = character; return character })
-      .then(character => setCharacter(character))
-      .then(() => fetch(`/api/planets/${char.homeworld}`))
-      .then(res => res.json())
-      .then(homeworld => setPlanet(homeworld))
-  }, []);
-
-  useEffect(() => {
-    fetch(`/api/characters/${id}/films`).then(res => res.json()).then(res => setFilms(() => res))
+    fetch(`/api/films/${id}/characters`).then(res => res.json()).then(res => setFilms(() => res))
   }, []);
 
   return (<>
@@ -40,7 +27,7 @@ const Character = (props) => {
     <section id="films">
       <h2>Films appeared in</h2>
       {films.map(film =>
-        <Link key={film.id} to={`/film/${film.id}`}>
+        <Link key={film.id} to={`/films/${film.id}`}>
           <button key={film.title}>{film.title}</button>
         </Link>
 
