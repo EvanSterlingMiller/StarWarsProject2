@@ -1,23 +1,21 @@
-import React from 'react';
 
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 
+//pulls the Character component in and maps it to display all characters
 const Characters = () => {
-    return (
-        <main>
-        <h1 id="name"></h1>
-        <section id="generalInfo">
-          <p>Height: <span id="height"></span> cm</p>
-          <p>Mass: <span id="mass"></span> kg</p>
-          <p>Born: <span id="birth_year"></span></p>
-        </section>
-        <section id="planets">
-          <h2>Homeworld</h2>
-          <p><span id="homeworld"></span></p>
-        </section>
-        <section id="films">
-          <h2>Films appeared in</h2>
-          <ul></ul>
-        </section>
-      </main>
+  const [characters, setCharacters] = useState([]);
+  useEffect(() => {
+    fetch("/api/characters").then(res => res.json()).then(res => setCharacters(res))
+  }, []);
+  return (
+    characters.map(character =>
+      <>
+        <Link to={`characters/${character.id}`}>
+          <button key={character.name}>{character.name}</button>
+        </Link>
+      </>
     )
+  )
 }
+export default Characters
