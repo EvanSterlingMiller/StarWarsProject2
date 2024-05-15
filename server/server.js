@@ -3,8 +3,8 @@ import {MongoClient, ObjectId} from 'mongodb';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
-// routes
-// import { films } from './routes/films';
+// routes?
+// import filmsRoute from "./routes/films.js";
 
 dotenv.config();
 
@@ -21,6 +21,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
+
+// If we want to abstract the routes out
+// app.use('/api/films', filmsRoute);
 
 
 // route to get planet info

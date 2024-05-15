@@ -1,7 +1,15 @@
+import express from "express";
+const router = express.Router();
 
-export const films = (app) => {
 
-    app.get("/api/films", async (req, res) => {
-        res.send("Nowhere are films to be found, sorry yo");
-    });
-}
+router.get("/", async (req, res) => {
+    console.log("In our films router");
+    res.send("Nowhere are films to be found, sorry yo");
+});
+
+router.get("/moreFilms", async (req, res) => {
+    res.send("Now we're at the more films route");
+})
+
+
+export default router;
